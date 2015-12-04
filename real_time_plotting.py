@@ -76,7 +76,7 @@ def main():
 		ax1.scatter(x,y,z)
 		ax2.scatter(x,y)
 
-		#fiz the axes limits
+		#fix the axes limits
 		ax1.set_xlim([0,21])
 		ax1.set_ylim([0,41])
 		ax1.set_zlim([0,20])
