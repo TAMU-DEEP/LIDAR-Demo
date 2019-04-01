@@ -13,7 +13,7 @@ Neato XV-11 LDS TX(Orange) : RX3
  */
 
 
-const int DesiredRPM=50;  // Setting Desired RPM Here.
+const int DesiredRPM=150;  // Setting Desired RPM Here.
 const int MotorPWMPin=3;
 int inByte = 0;         // incoming serial byte
 unsigned char Data_status=0;
@@ -36,11 +36,12 @@ unsigned char PWM4duty=PWM4dutyMin;  // have to set a default value make motor s
   Serial3.println("Arduino Neato XV-11 Motor control board v0.1 by Cheng-Lung Lee"); 
   
   // Pick your magic number and drive your motor , 178 is 178/255*5V=3.49V
-    analogWrite(MotorPWMPin, 100 );  
+    //analogWrite(MotorPWMPin, 150 );  
 }
 
 void loop() {
   //analogWrite(MotorPWMPin, 100 );  
+  analogWrite(MotorPWMPin, 150 ); 
     // if we get a valid byte from LDS, read it and send it to USB-serial
    if (Serial3.available() > 0) {
     // get incoming byte:
@@ -126,5 +127,6 @@ void SpeedControl ( int RPMinput)
   if (SpeedRPH>RPMinput*60)
      if(PWM4duty>PWM4dutyMin) PWM4duty--;  //Have to limit the lowest pwm keep motor running
   }     
+  //PWM4duty = 150;
   analogWrite(MotorPWMPin, PWM4duty ); // update value
 }

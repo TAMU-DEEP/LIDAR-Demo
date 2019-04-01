@@ -49,9 +49,8 @@ print "ok"
 #Array of points that will be plotted out
 points_x = [0]*360
 points_y = [0]*360
-
 #Initialize plot
-
+'''
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.set_xlim([-2500, 2500])
@@ -63,9 +62,9 @@ mng = plt.get_current_fig_manager()
 #mng.resize(*mng.window.maxsize())
 mng.full_screen_toggle()
 #plt.show(block=False)
+'''
 
-
-
+plt.axis([-2500, 2500, -2500, 2500])
 
 
 def graph():
@@ -106,7 +105,6 @@ Takes the angle (an int, from 0 to 359) and the list of four bytes of data in th
     
     dist_x = dist_mm*c
     dist_y = dist_mm*s
-
     
     #the flag for "bad data" was always set
     #points_x[angle] = dist_x
@@ -115,14 +113,13 @@ Takes the angle (an int, from 0 to 359) and the list of four bytes of data in th
     if x1 & 0x80: # is the flag for "bad data" set?
         #print "Bad data"
         # yes it's bad data, set points to origin
-        points_x[angle] = 10000
-        points_y[angle] = 10000
+        points_x[angle] = 0
+        points_y[angle] = 0
     else:
         #print "angle: %i\tdist_mm: %i\ndist_x: %i\tdist_y: %i\n" %(angle, dist_mm, dist_x, dist_y)
         #show where the points are
         points_x[angle] = dist_x
         points_y[angle] = dist_y
-
 
     
 init_level = 0
@@ -132,10 +129,12 @@ def get_data():
     global init_level, index
     n = 0
     update_every = 100
-    index2 = 0
+    #index2 = 0
     while True:
         #ser.write("a")
-        if init_level == 0 :
+        #print ser.read(1)
+        #b= ""
+        if init_level == 0:
             b = ord(ser.read(1))
             # start byte
             if b == 0xFA :
@@ -167,12 +166,16 @@ def get_data():
             update_view(index * 4 + 3, b_data3)
             n = n+1
             if n%update_every == 0: 
-                graph() #graph it
-                index2 = index2+1
+                #if 'points' in locals(): 
+                #graph() #graph it
+                #index2 = index2+1
+                points  = plt.scatter(points_x, points_y)
+                plt.pause(0.01)
+                points.remove()
+
             init_level = 0  #reset to accept new data
 
-        print index2 
-        if index2 > 5: break
+        #if index2 > 5: break
 
 
         #print b, b == 0xFA, b >= 0xA0 and b <= 0xF9, init_level
@@ -183,9 +186,11 @@ def get_data():
 
 get_data()
 
-plt.show()
-plt.grid(color = "#ffffff")
-print "ok" 
+
+
+#plt.show()
+#plt.grid(color = "#ffffff")
+
 
 print("Done")
 

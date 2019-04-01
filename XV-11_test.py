@@ -21,13 +21,20 @@
 # Requires VPython
 # and for communication with the robot : PySerial
 
+
+#	red	5V
+#	green	ground
+#	blue 	RX3 15
+#	black	PWM4
+
+
 from visual import *
 import thread, time, sys, traceback
 
 #---------- SETTINGS --------------
 use_real_robot = True # Set to True to use data from the COM port, False to use demo data.
 
-com_port = "COM3" # example: 5 == "COM6" == "/dev/tty5"
+com_port = "/dev/tty.usbmodem1411" # example: 5 == "COM6" == "/dev/tty5"
 baudrate = 115200
 #---------------------------------
 
