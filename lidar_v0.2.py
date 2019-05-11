@@ -98,8 +98,8 @@ Takes the angle (an int, from 0 to 359) and the list of four bytes of data in th
     #c = math.cos(angle_rad)
     #s = -math.sin(angle_rad)
 
-    c = c_vals[angle - 110]
-    s = s_vals[angle - 110]
+    c = c_vals[angle - 143]
+    s = s_vals[angle - 143]
     dist_mm = x | (( x1 & 0x3f) << 8) # distance is coded on 13 bits ? 14 bits ?
     quality = x2 | (x3 << 8) # quality is on 16 bits
     
@@ -169,9 +169,13 @@ def get_data():
                 #if 'points' in locals(): 
                 #graph() #graph it
                 #index2 = index2+1
-                points  = plt.scatter(points_x, points_y)
-                plt.pause(0.01)
+                points  = plt.scatter(points_x, points_y, color="blue")
+                car  = plt.scatter(0, 100, s=100, color="red",marker="^")
+                car2  = plt.scatter(0, 0, s=100, color="red",marker="s")
+                plt.pause(0.001)
                 points.remove()
+                car.remove()
+                car2.remove()
 
             init_level = 0  #reset to accept new data
 
