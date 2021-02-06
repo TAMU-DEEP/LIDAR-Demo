@@ -72,9 +72,9 @@ class LidarDataReader():
         return angle[0]
 
     def plot(self, pause=.01):
-        ldr.scatter = plt.scatter(ldr.points_x, ldr.points_y, color='blue')
+        self.scatter = plt.scatter(self.points_x, self.points_y, color='blue')
         plt.pause(pause)
-        ldr.scatter.remove()
+        self.scatter.remove()
 
 if __name__ == "__main__":
     import argparse
