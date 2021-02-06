@@ -6,10 +6,10 @@ from math import pi
 import time
 
 class LidarDataReader():
-    def __init__(self, serial_port='/dev/tty.HC-06-DevB', baudrate = 115200):
+    def __init__(self,ser):
         self.serial_port = serial_port
         self.baudrate = baudrate
-        self.ser = serial.Serial(serial_port, baudrate, timeout=5)
+        self.ser = ser
 
         #Array of points that will be plotted out
         self.points_x = [0]*360
@@ -83,9 +83,13 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--record", action="store_true")
     args = parser.parse_args()
 
+    serial_port='/dev/tty.HC-06-DevB'
+    baudrate = 115200
+    ser = serial.Serial(serial_port, baudrate, timeout=5)
+    ldr = LidarDataReader(ser=ser)
+    
     record = args.record
     if record: frames = []
-    ldr = LidarDataReader()
     max_val = args.max
     i = 0
     while True:
