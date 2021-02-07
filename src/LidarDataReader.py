@@ -12,13 +12,25 @@ class LidarDataReader():
         self.ser = ser
 
         #Array of points that will be plotted out
-        self.points_x = [0]*360
-        self.points_y = [0]*360
+        self.points_x = np.full(360,0)
+        self.points_y = np.full(360,0)
+        self.distance = np.full(360,0)
 
-        self.c_vals = [-math.sin(i * pi/ 180.0) for i in range(360)]
-        self.s_vals = [math.cos(i * pi/ 180.0) for i in range(360)]
+        self.angle = np.linspace(0,359,360)
+        self.c_vals = -np.sin(self.angle * pi/180.)
+        self.s_vals = np.cos(self.angle * pi/180.)
 
         self.axis = plt.axis([-2500, 2500, -2500, 2500])
+
+    def compute_distance(self,data):
+        x = data[0] #distance
+        x1= data[1] #distance mask
+        x2= data[2] #distance quality
+        x3= data[3] #distance quality mask
+        if x1 & 0x80:
+             return 0
+        dist_mm = x | (( x1 & 0x3f) << 8) # distance is coded on 13 bits ? 14 bits ?
+        return dist_mm
 
     def compute_angle_distance(self, angle, data):
         """
@@ -34,15 +46,15 @@ class LidarDataReader():
         quality = x2 | (x3 << 8) # quality is on 16 bits
         dist_x = dist_mm*c
         dist_y = dist_mm*s
-        return dist_x, dist_y
+        if x1 & 0x80: # is the flag for "bad data" set?
+            return dist_x, dist_y
+        else:
+            return dist_x, dist_y
 
-    def compute_angle_distance_list(self, angle_index, data_list):
-        angle_x_y = []
+    def update_angle_distance_list(self, angle_index, data_list):
         for i, data in enumerate(data_list):
             angle = angle_index * 4 + i
-            dist_x, dist_y = self.compute_angle_distance(angle, data)
-            angle_x_y.append([angle, dist_x, dist_y])
-        return angle_x_y
+            self.distance[angle] = self.compute_distance(data)
 
     def read_from_arduino(self):
         b = ord(self.ser.read(1))
@@ -53,7 +65,7 @@ class LidarDataReader():
         if not (b >= 0xA0 and b <= 0xF9): return -2
         index = b - 0xA0
         speed = [b for b in self.ser.read(2)]
-        b_data = [[ b for b in self.ser.read(4)] for i in range(4)]
+        b_data = [[b for b in self.ser.read(4)] for i in range(4)]
         return index, b_data
 
     def one_iteration(self):
@@ -62,17 +74,16 @@ class LidarDataReader():
         #ignore bad reads
         if result == -1 or result == -2: return -1
         index, data = result
-        angle_x_y = self.compute_angle_distance_list(index, data)
-        angle,x,y = list(zip(*angle_x_y))
-        #update
-        for a,x,y in angle_x_y:
-            self.points_x[a] = x
-            self.points_y[a] = y
-        #successfull update
-        return angle[0]
+        self.update_angle_distance_list(index, data)
+        return index
+
+    def get_x_y(self):
+        x,y = self.distance*self.c_vals, self.distance*self.s_vals
+        return x,y 
 
     def plot(self, pause=.01):
-        self.scatter = plt.scatter(self.points_x, self.points_y, color='blue')
+        x, y = self.get_x_y()
+        self.scatter = plt.scatter(x, y, color='blue')
         plt.pause(pause)
         self.scatter.remove()
 
