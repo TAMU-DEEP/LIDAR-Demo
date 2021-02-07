@@ -1,3 +1,17 @@
+/*
+Arduino Neato XV-11 Motor control board v0.2 by Cheng-Lung Lee
+Change log:
+V0.2 Add simple speed control code update PWM 3 times per rev.
+V0.1 Opend loop control version.
+
+This code is tested on Arduino Mega 1280
+I/O:
+Motor drive by low side driver IPS041L connect to PWM Pin4, Motor power from 5V
+Neato XV-11 LDS Vcc(red) : 5V
+Neato XV-11 LDS TX(Orange) : RX3
+ */
+
+
 const int DesiredRPM=150;  // Setting Desired RPM Here.
 const int MotorPWMPin=3;
 int inByte = 0;         // incoming serial byte
