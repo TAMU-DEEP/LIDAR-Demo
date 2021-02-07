@@ -29,7 +29,7 @@ unsigned char PWM4duty=PWM4dutyMin;  // have to set a default value make motor s
 
  void setup() {
     pinMode(MotorPWMPin, OUTPUT); 
-    //Serial.begin(115200);  // USB serial
+    Serial.begin(115200);  // USB serial
     Serial3.begin(115200);  // XV-11 LDS data 
 
   // prints title with ending line break 
@@ -42,12 +42,15 @@ unsigned char PWM4duty=PWM4dutyMin;  // have to set a default value make motor s
 void loop() {
   //analogWrite(MotorPWMPin, 100 );  
   analogWrite(MotorPWMPin, 150 ); 
+  //Serial.println("Arduino Neato XV-11 Motor control board v0.1 by Cheng-Lung Lee"); 
+  //Serial.println("Hello World!"); 
     // if we get a valid byte from LDS, read it and send it to USB-serial
+   //Serial.println("Hello World! 1"); 
    if (Serial3.available() > 0) {
     // get incoming byte:
     inByte = Serial3.read();
     //Serial.print(inByte, BYTE);
-    Serial3.write(inByte);
+    Serial.write(inByte); 
     decodeData(inByte);
   }
 
