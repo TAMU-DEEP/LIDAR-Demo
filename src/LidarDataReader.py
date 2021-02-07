@@ -32,25 +32,6 @@ class LidarDataReader():
         dist_mm = x | (( x1 & 0x3f) << 8) # distance is coded on 13 bits ? 14 bits ?
         return dist_mm
 
-    def compute_angle_distance(self, angle, data):
-        """
-        Takes the angle (an int, from 0 to 359) and the last of four bytes of data in the order they arrived.
-        """
-        x = data[0] #distance
-        x1= data[1] #distance mask
-        x2= data[2] #distance quality
-        x3= data[3] #distance quality mask
-        c = self.c_vals[angle - 143]
-        s = self.s_vals[angle - 143]
-        dist_mm = x | (( x1 & 0x3f) << 8) # distance is coded on 13 bits ? 14 bits ?
-        quality = x2 | (x3 << 8) # quality is on 16 bits
-        dist_x = dist_mm*c
-        dist_y = dist_mm*s
-        if x1 & 0x80: # is the flag for "bad data" set?
-            return dist_x, dist_y
-        else:
-            return dist_x, dist_y
-
     def update_angle_distance_list(self, angle_index, data_list):
         for i, data in enumerate(data_list):
             angle = angle_index * 4 + i
@@ -77,13 +58,37 @@ class LidarDataReader():
         self.update_angle_distance_list(index, data)
         return index
 
-    def get_x_y(self):
+    def get_x_y(self, min_distance=1):
         x,y = self.distance*self.c_vals, self.distance*self.s_vals
-        return x,y 
+        d_x_y_a = list(zip(self.distance,x,y,self.angle))
+        filtered_d_x_y_a = filter(lambda x: x[0] > min_distance, d_x_y_a)
+        d, x, y, a = zip(*filtered_d_x_y_a)
+        return d, x, y, a 
 
-    def plot(self, pause=.01):
-        x, y = self.get_x_y()
-        self.scatter = plt.scatter(x, y, color='blue')
+    def gradient(self):
+        return np.gradient(self.distance)
+
+    def jump_cluster(self, d, max_distance=200):
+        cluster_index = 1
+        cluster_list = np.full(len(d),0)
+        for i in range(len(d)):
+            cluster_list[i] = cluster_index
+            if i+1 != len(d):
+                if abs(d[i+1] - d[i]) > max_distance: cluster_index += 1
+            else:
+                if abs(d[i] - d[0]) < max_distance:
+                    print(cluster_list)
+                    cluster_list[cluster_list == cluster_index] = 1
+                    print(cluster_list)
+        return cluster_list
+
+    def plot(self, pause=.01,cluster=True):
+        d, x, y, a = self.get_x_y()
+        if cluster:
+            cluster = self.jump_cluster(d)
+            self.scatter = plt.scatter(x,y, c=cluster, cmap='prism') 
+        else:
+            self.scatter = plt.scatter(x, y, color='blue')
         plt.pause(pause)
         self.scatter.remove()
 
