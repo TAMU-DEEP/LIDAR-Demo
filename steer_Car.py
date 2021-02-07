@@ -21,55 +21,55 @@ def on_press(key):
         return False
     '''     
     if keyboard.Key.up:
-        print "forward"
-        ser.write('w')
+        print( "forward")
+        ser.write(b'w')
     
     if keyboard.Key.down:
-        print "bkf"
-        ser.write('d')
+        print( "bkf")
+        ser.write(b'd')
     if keyboard.Key.left:
-        print "down"
-        ser.write('a')
+        print( "down")
+        ser.write(b'a')
     if keyboard.Key.right:
-        print "down"
-        ser.write('q')
+        print( "down")
+        ser.write(b'q')
     '''
 
     if hasattr(key, "char"):
         
         if key.char == '8':
-            print "forward"
-            ser.write('w')
-            #print ser.readline()
+            print( "forward")
+            ser.write(b'w')
+            #print( ser.readline())
         if key.char == '6':
-            print "bkf"
-            ser.write('d')
+            print( "bkf")
+            ser.write(b'd')
         if key.char == '4':
-            print "down"
-            ser.write('a')
+            print( "down")
+            ser.write(b'a')
         if key.char == '2':
-            print "down"
-            ser.write('s')
+            print( "down")
+            ser.write(b's')
         if key.char == 'q':
-            print "down"
-            ser.write('q')
+            print( "down")
+            ser.write(b'q')
         if key.char == '5':
-            print "light"
-            ser.write('3')
+            print( "light")
+            ser.write(b'3')
         
         
-        #ser.write(key.char)   
+        #ser.write(bkey.char)   
 
 def on_release(key):
     #if key == keyboard.Key.up:
     if hasattr(key, "char"):
 
-        ser.write('e')
+        ser.write(b'e')
         '''if key.char == 'f':
 
-            print "up"
+            print( "up")
         ''' 
-        #ser.write('s')
+        #ser.write(b's')
         
 
 
@@ -77,19 +77,19 @@ def on_release(key):
 
 
 if __name__ == '__main__':
-    print "conecting to serial port ..."
+    print( "conecting to serial port ...")
     ser = serial.Serial(serial_port, serial_speed, timeout=5)
 
-    print "sending message to turn on PIN 13 ..."
+    print( "sending message to turn on PIN 13 ...")
     time.sleep(1)
-    #ser.write('q')
-    ser.write('e')
-    print "sending message to turn on PIN 13 ..."
-    ser.write('q')
+    #ser.write(b'q')
+    ser.write(b'e')
+    print( "sending message to turn on PIN 13 ...")
+    ser.write(b'q')
 
     #data = ser.readline()
     #if (data != ""):
-    #    print "arduino says: %s" % data
+    #    print( "arduino says: %s" % data)
 
     #fd = sys.stdin.fileno()
     #old = termios.tcgetattr(fd)
@@ -102,7 +102,7 @@ if __name__ == '__main__':
         '''
         data = ser.readline()
         if (data != ""):
-            print "arduino says: %s" % data
+            print( "arduino says: %s" % data)
         '''
 #termios.tcsetattr(fd, termios.TCSADRAIN, old)
 #    #time.sleep(10)
@@ -120,20 +120,20 @@ if __name__ == '__main__':
 #    #    #if ch == 'f':
     #
     #    while sys.stdin.read(1) =='f': 
-    #        ser.write('f')
-    #    ser.write('s')
+    #        ser.write(b'f')
+    #    ser.write(b's')
 
     #    if ch == 's':
-    #        ser.write('s')
+    #        ser.write(b's')
 
     #    if ch == '':
-    #        ser.write('s')
+    #        ser.write(b's')
     #    if ch == 'b':
     #        break
 
-    #    print "test"
+    #    print( "test")
     #    #time.sleep(.11)
-    #    #ser.write('s')
+    #    #ser.write(b's')
 
 
 
@@ -143,34 +143,34 @@ if __name__ == '__main__':
 
 '''
 
-    print "recieving message from arduino ..."
+    print( "recieving message from arduino ...")
     data = ser.readline()
 
     if (data != ""):
-        print "arduino says: %s" % data
+        print( "arduino says: %s" % data)
     else:
-        print "arduino doesnt respond"
+        print( "arduino doesnt respond")
 
-    ser.write('f')
+    ser.write(b'f')
     time.sleep(10)
 
-    print "recieving message from arduino ..."
+    print( "recieving message from arduino ...")
     data = ser.readline()
 
     if (data != ""):
-        print "arduino says: %s" % data
+        print( "arduino says: %s" % data)
     else:
-        print "arduino doesnt respond"
+        print( "arduino doesnt respond")
         
-    ser.write('s')
-    print "recieving message from arduino ..."
+    ser.write(b's')
+    print( "recieving message from arduino ...")
     data = ser.readline()
 
     if (data != ""):
-        print "arduino says: %s" % data
+        print( "arduino says: %s" % data)
     else:
-        print "arduino doesnt respond"
+        print( "arduino doesnt respond")
 
     time.sleep(4)
-    print "finish program and close connection!"
+    print( "finish program and close connection!")
 '''
