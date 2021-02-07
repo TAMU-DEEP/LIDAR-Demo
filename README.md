@@ -1,6 +1,6 @@
 # LIDAR Car:
 
-sketch_mar28b tested as of Feb 7 2021 to work both with stearing car and lidar seperately.
+lidar_car_ino tested as of Feb 7 2021 to work both with stearing car and lidar seperately.
 
 LIDAR:
 1. Blue-> SR3 RXD (15)
