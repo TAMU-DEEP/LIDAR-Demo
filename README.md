@@ -1,21 +1,28 @@
-# LIDAR-Demo
-Instructions for setting up the LIDAR:
+# LIDAR Car:
 
-Wiring:
+sketch_mar28b tested as of Feb 7 2021 to work both with stearing car and lidar seperately.
 
-Bluetoth chip connections
-	1. VCC-> 3.3 V
-	2. GND-> GND
-	3. TXD-> RX0
-	4. RXD-> (Resistor 1) to GND; (Resistor 2) to TX0
+LIDAR:
+1. Blue-> SR3 RXD (15)
+2. Red->Red->5V
+3. Black->Black->analogWrite(3)
+4. Green->Bronw->Ground
 
-LIDAR connections
-	Red-> 5V
-	Green-> GND
-	Blue-> RX3
-	Black-> PWM 4
+Bluetooth:
+1. Red->5V
+1. Brown->Ground
+1. Orange->RXD (Serial 0)
+1. Yelllow->TXD (Serial 0)
 
+Elago motor controller:
+1. Sheild connector.
 
+# LIDAR vis:
+
+Basic vis working with src/LidarDataReader.
+
+# Car controll:
+Need to write class to steer car. Instructions to be sent as "&[speedleft]:[speedright]&". between -255 and +255.
 
 HARDWARE:
 
