@@ -99,10 +99,10 @@ if __name__ == "__main__":
         #update plot on 0
         if angle == 0:
             ldr.plot()
-            if record: frames.append([ldr.points_x,ldr.points_y])
+            if record: frames.append([ldr.points_x.copy(),ldr.points_y.copy()])
             i += 1
 
     if record:      
         import pickle as pkl 
-        pkl.dump(frames,open("recorded_lidar.pkl",'wb'))
+        pkl.dump(frames,open("data/recorded_lidar.pkl",'wb'))
 
