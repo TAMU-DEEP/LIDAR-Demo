@@ -114,7 +114,7 @@ if __name__ == "__main__":
         angle = ldr.one_iteration()
         #update plot on 0
         if angle == 0:
-            ldr.plot()
+            ldr.plot(cluster=False)
             if record: frames.append([ldr.points_x.copy(),ldr.points_y.copy()])
             i += 1
 

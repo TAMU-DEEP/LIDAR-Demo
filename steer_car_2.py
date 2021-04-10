@@ -14,8 +14,9 @@ def stop():
     write_ser(0,0)
 
 
+wasd_dict = {'w':'f','s':'b','a':'l','d':'r'}
 
-step_time = 1000 # miliseconds
+step_time = 1000.0 # miliseconds
 
 class car_controller():
     def __init__(self,ser,step_time=1000):
@@ -54,7 +55,6 @@ class car_controller():
         speed = speed*sign
         write_ser(-speed,speed)
         time.sleep(step_time/1000.)
-
     def text_inst(self,direction,distance):
         distance = abs(distance)
         if 'f' in direction:
@@ -66,11 +66,15 @@ class car_controller():
         if 'l' in direction:
             self.turn(-1*distance)
     def interpret_text(self,text_inst):
-
-            text = text_inst[0]
-            distance = float(text_inst[1:])
-            print(text, distance)
-            self.text_inst(text,distance)
+        if len(text_inst) > 1:
+            try:
+                text = text_inst[0]
+                distance = float(text_inst[1:])
+                self.text_inst(text,distance)
+            except:
+                print("wrong format: '[f/b/l/r][distance]'")
+        else: 
+            self.text_inst(wasd_dict[text_inst],.1)
 
                        
     def follow_series(self,series):
@@ -88,5 +92,8 @@ if __name__ == "__main__":
     ser = serial.Serial(serial_port, baudrate, timeout=5)
     print(ser)
     car_ctrl = car_controller(ser,step_time=step_time)
-    car_ctrl.follow_series(test_series)
+    #car_ctrl.follow_series(test_series)
     #write_ser(200,200)
+    while True:
+        val = input("[dir][dist]:")
+        car_ctrl.interpret_text(val)

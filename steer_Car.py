@@ -1,176 +1,102 @@
 import serial
+import matplotlib.pyplot as plt
+import numpy as np
+import math
+from math import pi
 import time
-import termios
-import tty, sys
-from pynput import keyboard
+
+car_template ='&{}:{}&'
+
+def write_ser(speed_left,speed_right):
+    ser.write(car_template.format(speed_left,speed_right).encode())
+
+def stop():
+    write_ser(0,0)
 
 
-# # Serial port parameters
-#serial_speed = 9600
-serial_speed = 115200
-serial_port = '/dev/tty.HC-06-DevB'
+wasd_dict = {'w':'f','s':'b','a':'l','d':'r'}
 
-uPressed = False
-dPressed = False
-lPressed = False
-rPressed = False
+step_time = 1000.0 # miliseconds
 
-def on_press(key):
-    #if key == keyboard.Key.up:
-    if key == keyboard.Key.esc:
-        return False
-    '''     
-    if keyboard.Key.up:
-        print( "forward")
-        ser.write(b'w')
-    
-    if keyboard.Key.down:
-        print( "bkf")
-        ser.write(b'd')
-    if keyboard.Key.left:
-        print( "down")
-        ser.write(b'a')
-    if keyboard.Key.right:
-        print( "down")
-        ser.write(b'q')
-    '''
-
-    if hasattr(key, "char"):
-        
-        if key.char == '8':
-            print( "forward")
-            ser.write(b'w')
-            #print( ser.readline())
-        if key.char == '6':
-            print( "bkf")
-            ser.write(b'd')
-        if key.char == '4':
-            print( "down")
-            ser.write(b'a')
-        if key.char == '2':
-            print( "down")
-            ser.write(b's')
-        if key.char == 'q':
-            print( "down")
-            ser.write(b'q')
-        if key.char == '5':
-            print( "light")
-            ser.write(b'3')
-        
-        
-        #ser.write(bkey.char)   
-
-def on_release(key):
-    #if key == keyboard.Key.up:
-    if hasattr(key, "char"):
-
-        ser.write(b'e')
-        '''if key.char == 'f':
-
-            print( "up")
-        ''' 
-        #ser.write(b's')
-        
-
-
-
-
-
-if __name__ == '__main__':
-    print( "conecting to serial port ...")
-    ser = serial.Serial(serial_port, serial_speed, timeout=5)
-
-    print( "sending message to turn on PIN 13 ...")
-    time.sleep(1)
-    #ser.write(b'q')
-    ser.write(b'e')
-    print( "sending message to turn on PIN 13 ...")
-    ser.write(b'q')
-
-    #data = ser.readline()
-    #if (data != ""):
-    #    print( "arduino says: %s" % data)
-
-    #fd = sys.stdin.fileno()
-    #old = termios.tcgetattr(fd)
-    #old[3] = old[3] | termios.ECHO
-    #tty.setraw(sys.stdin.fileno())
-    # Collect events until released
-    with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
-        listener.join()
-
+class car_controller():
+    def __init__(self,ser,step_time=1000):
+        self.ser = ser
+        self.step_time = step_time
+    def forward(self,distance=18):
         '''
-        data = ser.readline()
-        if (data != ""):
-            print( "arduino says: %s" % data)
+        for 1 second run
+        towards lidar is backwards
+        18cm ~ 100
+        34cm ~150
+        44cm ~ 200
         '''
-#termios.tcsetattr(fd, termios.TCSADRAIN, old)
-#    #time.sleep(10)
-#
-#    fd = sys.stdin.fileno()
-#    old = termios.tcgetattr(fd)
-#    old[3] = old[3] | termios.ECHO
-#    tty.setraw(sys.stdin.fileno())
-#    # Collect events until released
-#    with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
-#        listener.join()
-#
-#    #while 1:
-#    #    ch = sys.stdin.read(1)
-#    #    #if ch == 'f':
-    #
-    #    while sys.stdin.read(1) =='f': 
-    #        ser.write(b'f')
-    #    ser.write(b's')
+        print(distance)
+        speed = 3.8 * abs(distance) + 30
+        sign = distance/abs(distance)
+        speed = max(speed,100)
+        speed = min(speed,255)
+        speed = -speed*sign
+        write_ser(speed,speed)
+        time.sleep(step_time/1000.)
 
-    #    if ch == 's':
-    #        ser.write(b's')
+    def turn(self,angle=math.pi/4):
+        '''
+        for 1 second run
+        left is negative
+        200 ~ 90 + 45 degrees
+        150 ~ 45 degrees
+        175 ~ 90 degrees
+        '''
+        speed = 100/math.pi * abs(angle) + 125
+        print(speed)
+        sign = angle/abs(angle)
+        speed = max(speed,150)
+        speed = min(speed,255)   
+        speed = speed*sign
+        write_ser(-speed,speed)
+        time.sleep(step_time/1000.)
+    def text_inst(self,direction,distance):
+        distance = abs(distance)
+        if 'f' in direction:
+            self.forward(distance)
+        if 'b' in direction:
+            self.forward(-1*distance)
+        if 'r' in direction:
+            self.turn(distance)
+        if 'l' in direction:
+            self.turn(-1*distance)
+    def interpret_text(self,text_inst):
+        if len(text_inst) > 1:
+            try:
+                text = text_inst[0]
+                distance = float(text_inst[1:])
+                self.text_inst(text,distance)
+            except:
+                print("wrong format: '[f/b/l/r][distance]'")
+        else: 
+            try:
+                self.text_inst(wasd_dict[text_inst],.1)
+            except:
+                print("not wasd")
 
-    #    if ch == '':
-    #        ser.write(b's')
-    #    if ch == 'b':
-    #        break
+                       
+    def follow_series(self,series):
+        for inst in series:
+            self.interpret_text(inst)
+            
 
-    #    print( "test")
-    #    #time.sleep(.11)
-    #    #ser.write(b's')
+test_series= ['l1.5','r1.5','f30','b30']
 
+if __name__ == "__main__":
+    import argparse
 
-
-    #termios.tcsetattr(fd, termios.TCSADRAIN, old)
-    #termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
-
-
-'''
-
-    print( "recieving message from arduino ...")
-    data = ser.readline()
-
-    if (data != ""):
-        print( "arduino says: %s" % data)
-    else:
-        print( "arduino doesnt respond")
-
-    ser.write(b'f')
-    time.sleep(10)
-
-    print( "recieving message from arduino ...")
-    data = ser.readline()
-
-    if (data != ""):
-        print( "arduino says: %s" % data)
-    else:
-        print( "arduino doesnt respond")
-        
-    ser.write(b's')
-    print( "recieving message from arduino ...")
-    data = ser.readline()
-
-    if (data != ""):
-        print( "arduino says: %s" % data)
-    else:
-        print( "arduino doesnt respond")
-
-    time.sleep(4)
-    print( "finish program and close connection!")
-'''
+    serial_port='/dev/tty.HC-06-DevB'
+    baudrate = 115200
+    ser = serial.Serial(serial_port, baudrate, timeout=5)
+    print(ser)
+    car_ctrl = car_controller(ser,step_time=step_time)
+    #car_ctrl.follow_series(test_series)
+    #write_ser(200,200)
+    while True:
+        val = input("[dir][dist]:")
+        car_ctrl.interpret_text(val)
