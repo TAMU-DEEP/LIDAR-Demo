@@ -83,12 +83,15 @@ class LidarDataReader():
         return cluster_list
 
     def plot(self, pause=.01,cluster=True):
-        d, x, y, a = self.get_x_y()
-        if cluster:
-            cluster = self.jump_cluster(d)
-            self.scatter = plt.scatter(x,y, c=cluster, cmap='prism') 
-        else:
-            self.scatter = plt.scatter(x, y, color='blue')
+        try:
+            d, x, y, a = self.get_x_y()
+            if cluster:
+                cluster = self.jump_cluster(d)
+                self.scatter = plt.scatter(x,y, c=cluster, cmap='prism') 
+            else:
+                self.scatter = plt.scatter(x, y, color='blue')
+        except:
+            print("dropped data")
         plt.pause(pause)
         self.scatter.remove()
 

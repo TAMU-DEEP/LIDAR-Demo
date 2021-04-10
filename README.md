@@ -24,6 +24,16 @@ Basic vis working with src/LidarDataReader.
 # Car controll:
 Need to write class to steer car. Instructions to be sent as "&[speedleft]:[speedright]&". between -255 and +255.
 
+# run in two terminals:
+```
+python3 steer_Car.py
+```
+```
+python3 LidarDataReader.py 
+```
+
+steer_Car can be controlled with wasd or 'f/b/l/r' and a distance in cms or radians
+
 HARDWARE:
 
 1. Make sure that each of the four bare wires of the cord in the box with the arduino chip
